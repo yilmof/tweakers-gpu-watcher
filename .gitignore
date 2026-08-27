@@ -1,0 +1,5 @@
+.env
+gpu-watcher-data/
+__pycache__/
+*.py[cod]
+

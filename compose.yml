@@ -1,0 +1,21 @@
+services:
+  gpu-watcher:
+    build: .
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    volumes:
+      - ./gpu-watcher-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import os, time, pathlib; t=float(pathlib.Path('/data/heartbeat').read_text()); limit=max(300, int(os.environ.get('POLL_SECONDS', '120')) * 2 + 60); assert time.time()-t < limit",
+        ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
