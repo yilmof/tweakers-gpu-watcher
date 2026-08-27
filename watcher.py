@@ -16,6 +16,7 @@ import feedparser
 import requests
 
 FEED_URL = os.environ.get("FEED_URL", "https://tweakers.net/feeds/va.xml")
+PROXY_URL = os.environ.get("PROXY_URL", "").strip()
 SEEN_FILE = Path(os.environ.get("SEEN_FILE", "/data/seen_ids.json"))
 HEARTBEAT_FILE = Path(os.environ.get("HEARTBEAT_FILE", "/data/heartbeat"))
 POLL_SECONDS = int(os.environ.get("POLL_SECONDS", "120"))
@@ -168,12 +169,14 @@ def notify(title: str, body: str, click: str | None = None, tags: str = "compute
 
 
 def fetch_feed() -> list:
+    proxies = {"http": PROXY_URL, "https": PROXY_URL} if PROXY_URL else None
     r = requests.get(
         FEED_URL,
         headers={
             "User-Agent": USER_AGENT,
             "Accept": "application/rss+xml, application/xml, text/xml, */*",
         },
+        proxies=proxies,
         timeout=20,
     )
     r.raise_for_status()
